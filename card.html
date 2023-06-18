@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>翻牌遊戲</title>
+    <style>
+        .card {
+            width: 100px;
+            height: 150px;
+            background-color: #ccc;
+            border: 1px solid #999;
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+        .card .card-inner {
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card .card-face {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+        }
+        .card .card-front {
+            transform: rotateY(0deg);
+        }
+        .card .card-back {
+            transform: rotateY(180deg);
+        }
+        .card img {
+            width: 100px;
+            height: 150px;
+        }
+    </style>
+</head>
+<body>
+    <h1>翻牌遊戲</h1>
+    <div id="cardsContainer"></div>
+
+    <script>
+        var cardsContainer = document.getElementById('cardsContainer');
+        var cards = [];
+        var flippedCards = [];
+        var numFlips = 0;
+
+        // 建立牌組
+        var images = ['image_1.jpg', 'image_2.jpg', 'image_3.jpg']; // 替換成你的圖庫中的圖片名稱列表
+var cards = [];
+
+for (var i = 0; i < images.length; i++) {
+    cards.push(images[i]);
+}
+
+// 洗牌
+shuffle(cards);
+
+// 建立牌的 HTML
+for (var i = 0; i < 3; i++) { // 只建立三张牌
+    var card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.index = i;
+    card.addEventListener('click', flipCard);
+
+    var cardInner = document.createElement('div');
+    cardInner.className = 'card-inner';
+
+    var cardFront = document.createElement('div');
+    cardFront.className = 'card-face card-front';
+    var frontImage = document.createElement('img');
+    frontImage.src = 'path_to_your_image_folder/card_front.jpg'; // 替換成正面圖片的路徑
+    cardFront.appendChild(frontImage);
+
+    var cardBack = document.createElement('div');
+    cardBack.className = 'card-face card-back';
+    var backImage = document.createElement('img');
+    backImage.src = 'path_to_your_image_folder/' + getRandomImage(); // 使用隨機選擇的圖片
+    cardBack.appendChild(backImage);
+
+    cardInner.appendChild(cardFront);
+    cardInner.appendChild(cardBack);
+    card.appendChild(cardInner);
+
+    cardsContainer.appendChild(card);
+    cards.shift(); // 移除已使用的牌
+}
+        function flipCard() {
+  if (flippedCards.length < 3 && !this.classList.contains('flipped')) {
+    this.classList.add('flipped');
+    flippedCards.push(this);
+
+    if (flippedCards.length === 3) {
+      var card1 = flippedCards[0];
+      var card2 = flippedCards[1];
+      var card3 = flippedCards[2];
+            
+      var index1 = card1.dataset.index;
+      var index2 = card2.dataset.index;
+      var index3 = card3.dataset.index;
+
+      var img1 = card1.querySelector('.card-back img');
+      var img2 = card2.querySelector('.card-back img');
+      var img3 = card3.querySelector('.card-back img');
+
+      if (index1 % 3 === index2 % 3 && index2 % 3 === index3 % 3) {
+        // 三張牌面相同
+        setTimeout(function () {
+          img1.style.visibility = 'hidden';
+          img2.style.visibility = 'hidden';
+          img3.style.visibility = 'hidden';
+
+          card1.removeEventListener('click', flipCard);
+          card2.removeEventListener('click', flipCard);
+          card3.removeEventListener('click', flipCard);
+
+          flippedCards = [];
+
+          checkGameEnd();
+        }, 1000);
+      } else {
+        // 三張牌面不同
+        setTimeout(function () {
+          card1.classList.remove('flipped');
+          card2.classList.remove('flipped');
+          card3.classList.remove('flipped');
+
+          flippedCards = [];
+        }, 1000);
+      }
+
+      numFlips++;
+      console.log('第 ' + numFlips + ' 張牌翻開');
+    }
+  }
+}
+
+
+function checkGameEnd() {
+  var allCards = document.getElementsByClassName('card');
+  var allHidden = true;
+
+  for (var i = 0; i < allCards.length; i++) {
+    if (!allCards[i].classList.contains('flipped')) {
+      allHidden = false;
+      break;
+    }
+  }
+
+  if (allHidden) {
+    console.log('所有牌都已翻過！');
+    // 在這裡添加遊戲結束的處理
+  }
+}
+
+function shuffle(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+}
+
+// 建立牌組、洗牌、建立牌的 HTML 等程式碼...
+function getRandomImage() {
+  var index = Math.floor(Math.random() * images.length);
+  var image = images[index];
+  images.splice(index, 1);
+  return image;
+}
+
+
+
+</script>
+</body>
+</html>
